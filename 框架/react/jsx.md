@@ -37,6 +37,27 @@ jsx的特点说来也简单，我们可以总结以下三点：
 - 组件名要以大写字母开头，如`App`
 - 属性名要写成驼峰式，如`dataIndex`
 
+在onClick事件监听方面，应该始终传入一个函数，而不是一个函数的执行结果，如：
+
+```js
+function App() {
+    const sayHello = () => {
+        console.log('hello')
+    }
+
+    return (
+        // 正确✅
+        <Button onClick={sayHello}>问候</Button>
+
+        // 正确✅
+        <Button onClick={() => sayHello()}>问候</Button>
+
+        // 错误❌
+        <Button onClick={sayHello()}>问候</Button>
+    )
+}
+```
+
 # 关于props
 
 ```js
@@ -44,5 +65,7 @@ jsx的特点说来也简单，我们可以总结以下三点：
 ```
 
 对于如上这个组件，在组件内部它接收到的props会是这样：`{ content: "图雀", from: "图雀社区" }`，这里的key属性不会并入到props对象中，因为这里key的作用是为了更高效地更新虚拟DOM，并不是提供给这个组件内部使用。
+
+顺带一提，在react中处理列表循环基本上都是用map方法。
 
 
