@@ -53,6 +53,11 @@ useEffect 的执行机制，是在初次渲染时，执行到 useEffect 就将�
 
 所以，说白了，要不要 re-render，完全取决于链表里面的东西有没有变化。
 
+
+```!
+另外我们很容易发现：我们并不需要把 useState 返回的第二个 Setter 函数作为 Effect 的依赖。实际上，React 内部已经对 Setter 函数做了 Memoization 处理，因此每次渲染拿到的 Setter 函数都是完全一样的，不需要把这个Setter函数放到deps数组里面。
+```
+
 ## 用法
 
 useEffect 的用法，无非是为了模拟三个生命周期：`componentDidMount`、`shouldComponentUpdate`、`componentWillUnmount`，相当于三个生命周期合并为一个 api。
