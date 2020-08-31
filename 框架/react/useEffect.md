@@ -49,9 +49,13 @@ Object.is([], []); // false
 
 这样就会有一个隐患，当 deps 数组里面的子元素为引用类型的时候，每次对比都会是 false，从而执行 effectFn。因为 Object.is 对比引用类型的时候，比较的是两个指针是否指向堆内存中的同一个地址。
 
+useEffect 的执行机制，是在初次渲染时，执行到 useEffect 就将内部的 effectFn 放到两个地方：一个是 hooks 链表中，另外一个则是 EffectList 队列中。在渲染完成后，会依次执行 EffectList 里面的 effectFn 集合。
+
+所以，说白了，要不要 re-render，完全取决于链表里面的东西有没有变化。
+
 ## 用法
 
-useEffect 的用法，无非是为了模拟三个生命周期：`componentDidMount`、`shouldComponentUpdate`、`componentDidUnmount`，相当于三个生命周期合并为一个 api。
+useEffect 的用法，无非是为了模拟三个生命周期：`componentDidMount`、`shouldComponentUpdate`、`componentWillUnmount`，相当于三个生命周期合并为一个 api。
 
 当我开始深入理解 hooks 的原理之后，我才明白为什么一线大厂如此偏爱于 react，因为这种简洁的思想，带来的就是如诗般优雅的代码。
 
@@ -64,3 +68,38 @@ useEffect(async () => {
   // ...
 });
 ```
+
+所谓`shouldComponentUpdate`，我们可以这样使用：
+
+```js
+useEffect(() => {
+  // xxx
+});
+```
+
+这个副作用的 effectFn 会在首次渲染之后和每次重渲染之后执行，相当于模拟了 shouldComponentUpdate 这一生命周期。
+
+所谓`componentDidMount`，则是这样：
+
+```js
+useEffect(() => {
+  // xxx
+}, []);
+```
+
+因为当有 desp 数组时，里面 effectFn 是否执行取决于 deps 数组内的数据是否变化，而传入空数组
+
+所谓`componentWillUnmount`，则是这样：
+
+```js
+useEffect(() => {
+  // 执行副作用
+  // ...
+  return () => {
+    // 清除上面的副作用
+    // ...
+  };
+}, []);
+```
+
+此外我们应该始终遵循一个原则：那就是*不要对deps依赖撒谎*，否则会引发一系列bug。当然编辑器的linter也不会允许我们这样做，这一点非常关键。
