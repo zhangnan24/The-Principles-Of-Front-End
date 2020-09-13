@@ -108,3 +108,7 @@ instance.interceptors.response.use(
 
 export default instance;
 ```
+
+## 踩坑小记
+
+axios的0.19.0版本有坑，不支持config自定义字段配置，升级到0.20.0版本后得到解决。
