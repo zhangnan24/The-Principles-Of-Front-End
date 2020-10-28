@@ -116,4 +116,4 @@ beforeRouteUpdate(to, from, next) {
 ```
 无论是监听$route变化还是beforeRouteUpdate导航守卫，它们其实都是懒执行的，也就是说，第一次从其他页面进来的时候不会执行。当我们已经处于当前页面，跳往其他页面时，才会被触发。
 
-当然这两个也有细微的区别，监听$route变化是在跳转成功之后，而beforeRouteUpdate则是在跳转到下一个页面之前（执行next（）的时候才是真正执行跳转动作）。
+当然这两个也有细微的区别，监听$route变化是在跳转成功之后，而beforeRouteUpdate则是在跳转到下一个页面之前（执行next的时候才是真正执行跳转动作）。
