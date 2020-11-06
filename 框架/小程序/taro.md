@@ -2,26 +2,26 @@
 
 1. 全局安装taro脚手架
 
-```shell
+```powershell
 npm i -g @tarojs/cli
 ```
 
 2. 进入某个文件夹，然后初始化一个项目
 
-```shell
+```powershell
 taro init [项目名]
 ```
 
 3. 检查当前项目存在的问题
 
-```shell
+```powershell
 // 进入项目根目录，运行此命令
 taro doctor
 ```
 
 4. 新建一个包含默认模板的页面
 
-```shell
+```powershell
 taro create [页面名]
 ```
 

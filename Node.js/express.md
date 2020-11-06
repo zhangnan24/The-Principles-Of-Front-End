@@ -4,7 +4,7 @@
 
 ## 项目中安装
 
-```shell
+```powershell
 npm i express
 ```
 

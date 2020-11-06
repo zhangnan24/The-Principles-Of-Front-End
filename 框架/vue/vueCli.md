@@ -42,7 +42,7 @@ process.env被称作客户端环境变量，但是我更愿意称之为**当前�
 
 有时候我们可能需要更多的模式，这时候我们就可以在运行package.json文件时，显式地指定你希望运行的模式，如：
 
-```shell
+```powershell
 "serve": "vue-cli-service serve --mode dev"
 ```
 

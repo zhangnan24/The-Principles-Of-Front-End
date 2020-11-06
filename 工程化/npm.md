@@ -2,7 +2,7 @@
 
 ## 全局更新某个安装包
 
-```shell
+```powershell
 npm update -g [依赖名]
 ```
 
@@ -14,7 +14,7 @@ install是安装，对应的卸载命令为uninstall。
 
 如果我们需要全局卸载某个东西，那就可以执行：
 
-```shell
+```powershell
 npm uninstall -g [依赖名]
 ```
 

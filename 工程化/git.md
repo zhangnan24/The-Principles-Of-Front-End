@@ -6,7 +6,7 @@
 
 示例如下：
 
-```shell
+```powershell
 git diff bugFix dev
 
 gif diff bugFix dev --stat
@@ -18,7 +18,7 @@ git diff bugFix dev src/utils/validator.js
 
 ## 为当前所在节点打tag
 
-```shell
+```powershell
 git tag [tag名称] [当前所在节点]
 ```
 
@@ -26,7 +26,7 @@ git tag [tag名称] [当前所在节点]
 
 ## 显示tag列表
 
-```shell
+```powershell
 git tag
 ```
 
@@ -34,7 +34,7 @@ git tag
 
 ## 展示某一次tag的详情
 
-```shell
+```powershell
 git show [tag名称]
 ```
 
@@ -42,7 +42,7 @@ git show [tag名称]
 
 ## 将tag推送到远程
 
-```shell
+```powershell
 git push --tags
 ```
 这个命令就是将本地打的tag推送到远程，非常重要。
