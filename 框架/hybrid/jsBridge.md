@@ -40,7 +40,7 @@ window.NativeBridge.openCamera();
 
 ## native 拦截
 
-首先 native 真的不如注入来的科学，我们姑且看一下拦截的实现思路：
+首先 native 拦截真的不如注入来的科学，我们姑且看一下拦截的实现思路：
 
 h5 一般通过 iframe.src 方法发送一个 url 请求，当然这个 iframe 会设置`display: none`来避免对用户视觉造成影响，这个请求的协议比较特别，它是一个 h5 和 native 约定的特殊协议，随意命名，比如命名为`mynative`。那么这时候会发送一个类似于`mynative://openCamera?flashlight=off`这样的请求。
 
@@ -94,14 +94,14 @@ public class NativeInjectObject {
 webview.addJavascriptInterface(new NativeInjectObject(), 'NativeBridge')
 ```
 
+# js-native-sdk 的封装
 
-# js-native-sdk的封装
+实际上，我们已经实现了一个 sdk 的简单封装，它做的事情很简单，那就是：_封装一堆原生的方法，并把每个方法的执行结果处理成 promise 对象返回。_
 
-实际上，我们已经实现了一个sdk的简单封装，它做的事情很简单，那就是：*封装一堆原生的方法，并把每个方法的执行结果处理成promise对象返回。*
-
-为什么要处理成promise返回？因为易用。我们再理一遍这个流程：
+为什么要处理成 promise 返回？因为易用。我们再理一遍这个流程：
 
 原生端：
+
 ```java
 public class NativeInjectObject {
     public void openCamera(successCbKey, failCbKey) {
@@ -126,12 +126,14 @@ public class NativeInjectObject {
 webview.addJavascriptInterface(new NativeInjectObject(), 'NativeBridge')
 ```
 
-webview中：
+webview 中：
+
 ```js
-window.NativeBridge // {openCamera: ƒ, getLocation: ƒ}
+window.NativeBridge; // {openCamera: ƒ, getLocation: ƒ}
 ```
 
-js-native-sdk中：
+js-native-sdk 中：
+
 ```js
 // 打开摄像头
 function openCamera() {
@@ -171,13 +173,11 @@ function getUserLocation() {
   });
 }
 
-export {
-    openCamera,
-    getUserLocation
-}
+export { openCamera, getUserLocation };
 ```
 
 业务代码中：
+
 ```js
 <script>
 import { openCamera } from 'js-native-sdk'
