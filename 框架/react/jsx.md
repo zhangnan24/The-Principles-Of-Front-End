@@ -12,7 +12,7 @@ function App() {
 ReactDOM.render(<App />, document.getElementById('root')) 
 ```
 
-对于上面的函数组件App，有必要说一说，`<div>hello world</div>`是一段jsx代码，它会被babel转化成`React.createComponent("div", null, "hello world")`。没错，babel除了转es6为es5，也可以转jsx代码。
+对于上面的函数组件App，有必要说一说，`<div>hello world</div>`是一段jsx代码，它会被babel转化成`React.createElement("div", null, "hello world")`。没错，babel除了转es6为es5，也可以转jsx代码。
 
 所以jsx本质上最后还是调用React内部的createElement函数，这个函数依次接收三个参数：标签名、传入的属性对象、标签里的内容。
 
@@ -67,5 +67,7 @@ function App() {
 对于如上这个组件，在组件内部它接收到的props会是这样：`{ content: "图雀", from: "图雀社区" }`，这里的key属性不会并入到props对象中，因为这里key的作用是为了更高效地更新虚拟DOM，并不是提供给这个组件内部使用。
 
 顺带一提，在react中处理列表循环基本上都是用map方法。
+
+# React中的插槽
 
 

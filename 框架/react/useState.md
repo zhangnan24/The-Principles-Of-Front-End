@@ -30,7 +30,7 @@ const [count, setCount] = useState(0);
 
 当 useState 返回的初始值为数字或者字符串时，可以利用 ts 的自动类型推断去做，但是如果说是初始值是 null 或 undefined 时，则需要显式地指定其未来的值类型，如:
 
-```js
+```tsx
 const [str, setStr] = useState<string>();
 ```
 
