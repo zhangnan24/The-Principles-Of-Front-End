@@ -46,3 +46,22 @@ git show [tag名称]
 git push --tags
 ```
 这个命令就是将本地打的tag推送到远程，非常重要。
+
+## commit-message规范
+
+主要就是type类型，盘点如下：
+
+- feat 新功能
+- fix 修复bug
+- style 样式调整，不影响代码逻辑
+- docs 新增/编辑了相关文档
+- perf 代码/体验优化
+- refactor 某一块彻底重构
+- merge 代码合并
+
+示例：
+
+```powershell
+git commit -m "feat: 新增了某某功能"
+```
+
