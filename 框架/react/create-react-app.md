@@ -8,13 +8,7 @@ npx create-react-app [项目名] --template typescript
 
 # 关于 typescript 的配置
 
-要想在项目中使用 tsx，需要将 tsconfig.json 里面的`jsx`的值设为非`react-jsx`。
-
-jsx 的几个值含义如下：
-
-- preserve。 保留 jsx，输出.jsx
-- react-native。保留 jsx，输出 js
-- react。 直接输出编译成 ReactElement 的 js
+可能会遇到类似“无法使用 JSX，除非提供了 “--jsx“ 标志”的问题，这是由于react17以后给tsx解析增加了新特性，但是需要typescript4.1后的版本支持，所以升级一下ts版本就可以了，同时需要把vscode工作区的ts版本也改为最新的，这样最终会改到`.vscode/settings.json`这个文件里面。
 
 # React 路由配置
 
