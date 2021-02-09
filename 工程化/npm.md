@@ -28,6 +28,8 @@ install是安装，对应的卸载命令为uninstall。
 
 如果我们需要全局卸载某个东西，那就可以执行：
 
+我们是真的不再一行
+
 ```powershell
 npm uninstall -g [依赖名]
 ```
