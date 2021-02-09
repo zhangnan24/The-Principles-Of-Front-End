@@ -28,8 +28,6 @@ install是安装，对应的卸载命令为uninstall。
 
 如果我们需要全局卸载某个东西，那就可以执行：
 
-我们是真的不再一行
-
 ```powershell
 npm uninstall -g [依赖名]
 ```
@@ -37,7 +35,3 @@ npm uninstall -g [依赖名]
 tips：在linux中，ls就是list的意思，也就是以列表形式展开。
 
 ## 通过patch-package给node_modules某个包打补丁
-
-唉，我是真的烦。
-
-我是后面来的，同一个文件不同行的修改。
