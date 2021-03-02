@@ -53,3 +53,16 @@ tips：在linux中，ls就是list的意思，也就是以列表形式展开。
 5. 在远程的依赖安装命令中，增加打入补丁的命令，如：`yarn && yarn patch-package`，用来在安装依赖完成后，将patch文件打入远程的node_modules中。
 
 这里并不是很推荐重新定义postinstall，我们大体知道，一次install会经历**preinstall --> install --> postinstall**等阶段。但是在远程流水线的shell脚本中，为了确保安装顺利进行，常常会定义类似`npm install --ignore-scripts`的语句。这个时候我们照着官网重新在script中定义的`"postinstall" : "patch-package"`是会被忽略的。所以这里其实加多一条命令会是更好的做法。
+
+## 关于sha512错误
+
+有时候执行`npm install`的时候会碰到奇怪的sha512错误，报错大约如下：
+
+```powershell
+npm ERR! sha512-xxxxx
+```
+
+这是由于哈希检测引起的，具体原因不明，不过可以通过以下方法来解决：
+
+1. 删除`package-lock.json`；
+2. 重新执行`npm install`安装。
