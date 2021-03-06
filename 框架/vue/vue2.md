@@ -117,3 +117,21 @@ beforeRouteUpdate(to, from, next) {
 无论是监听$route变化还是beforeRouteUpdate导航守卫，它们其实都是懒执行的，也就是说，第一次从其他页面进来的时候不会执行。当我们已经处于当前页面，跳往其他页面时，才会被触发。
 
 当然这两个也有细微的区别，监听$route变化是在跳转成功之后，而beforeRouteUpdate则是在跳转到下一个页面之前（执行next的时候才是真正执行跳转动作）。
+
+## vue2生命周期（父子组件情况）
+
+其实vue的生命周期，我们可以归纳为如下三个阶段：
+
+1. 挂载阶段（`beforeCreate`、`created`、`beforeMount`、`mounted`）
+2. 更新阶段（`beforeUpdate`、`updated`）
+3. 销毁阶段（`beforeDestroy`、`destroyed`）
+
+其中比较典型的两个声明周期可以拿出来说一下：
+
+- `created`，表示vue组件已经实例化完成，但是页面还没有渲染
+- `mounted`，页面已经渲染完成
+
+至于有父子组件的情况，我们可以归结为这样的规律：
+
+- 调用（`beforeXXX`）、创建（`created`）是从外到內的；
+- 执行（`mounted`、`updated`、`destroyed`）是从內到外的。
