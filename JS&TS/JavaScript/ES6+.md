@@ -1,8 +1,4 @@
-# 手写 async/await
-
-首先我们确定实现方案：`Promise` + `generator` 。
-
-# 关于模块化
+## 关于模块化
 
 说一说 js 模块化这回事儿吧。
 
