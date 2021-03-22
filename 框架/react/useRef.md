@@ -26,4 +26,7 @@ return (
 
 ## 保存可变值
 
-useRef将会创建一个ref对象，并把这个ref对象保存在函数式组件外部的hookList。这样有个好处是：
+useRef将会创建一个ref对象，并把这个ref对象保存在函数式组件外部的hookList。这样有好处的：
+
+1. 独立于`capture value`之外存储，不用担心获得过时变量的问题；
+2. 可以同步修改状态。

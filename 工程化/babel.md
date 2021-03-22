@@ -1,8 +1,8 @@
-# babel 能做什么事情
+## babel 能做什么事情
 
 在EcmaScript里面，babel能做的事情，就是将 ES6 以上的高版本语法，转化为 ES5 甚至是 ES3 这样的低版本语法。
 
-简单来说：**babel就是是一个JS新语法编译器，负责对JS的新语法做降版本处理（ES5、ES3之类）。**
+简单来说：**babel就是一个JS新语法编译器，负责对JS的新语法做降版本处理（ES5、ES3之类）。**
 
 比如：
 
@@ -29,7 +29,7 @@ var sum = function sum(a, b) {
 
 polyfill，就是在一些不支持高版本EcmaScript新潮API的老旧浏览器中，通过老旧的语法，模拟实现新的API。
 
-就比如includes，mdn的官方polyfill实现如下：
+就比如`includes`这个api，mdn的官方polyfill实现如下：
 
 ```js
 if (!Array.prototype.includes) {
@@ -41,7 +41,7 @@ if (!Array.prototype.includes) {
 }
 ```
 
-大体看一些可以发现，就是用各种老旧语法也定义一个叫`includes`的函数，并且直接挂到Array.prototype里面，让其用起来跟ES6的includes效果一样。
+大体看一些可以发现，就是用各种老旧语法也定义一个叫`includes`的函数，并且直接挂到`Array.prototype`里面，让其用起来跟ES6的`includes`效果一样。
 
 ```!
 注意⚠️： polyfill的策略是暴力的，比如检测到Array里面没有includes这个API，就会直接在全局Array的原型链上直接追加这个API；如果没有Promise这个API，就会直接在window对象中追加这个属性。
@@ -53,7 +53,7 @@ if (!Array.prototype.includes) {
 
 # @babel/polyfill
 
-core-js虽然牛逼，但是它没有用低版本API实现`generator`函数。
+core-js虽然牛逼，但是它没有用低版本API实现`async/await`函数。
 
 而恰巧另一个库很好的实现了这一功能，这使得无数开发者能够放心地写`async/await`语法，并平稳安全地运行在无数老旧浏览器中，它就是`regenerator`，当然现在已经改良成了`regenerator-runtime`，并在npm中拥有近两千万的周下载量。
 

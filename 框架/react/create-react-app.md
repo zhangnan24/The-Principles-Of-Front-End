@@ -1,4 +1,4 @@
-# 开始
+## 开始
 
 貌似从 4.0.0 以后，就不支持全局安装 create-react-app 了。
 
@@ -6,11 +6,11 @@
 npx create-react-app [项目名] --template typescript
 ```
 
-# 关于 typescript 的配置
+## 关于 typescript 的配置
 
 可能会遇到类似“无法使用 JSX，除非提供了 “--jsx“ 标志”的问题，这是由于react17以后给tsx解析增加了新特性，但是需要typescript4.1后的版本支持，所以升级一下ts版本就可以了，同时需要把vscode工作区的ts版本也改为最新的，这样最终会改到`.vscode/settings.json`这个文件里面。
 
-# React 路由配置
+## React 路由配置
 
 react 中的路由，基本上是基于`react-router-dom`这个包来做的。
 
@@ -27,11 +27,11 @@ react 中的路由，基本上是基于`react-router-dom`这个包来做的。
 
 也就是说，router 是顶层提供者，route 是信息消费者。
 
-## router 选用
+### router 选用
 
 对于浏览器项目我们通常选用`BrowserRouter`或者`HashRouter`组件来实现 Router。前者会刷新页面，后者不会刷新页面，但是 url 中会多一个`#`。
 
-## route 介绍
+### route 介绍
 
 Route 就是一个普通的 react 组件，路由匹配成功则原地渲染该组件。它主要有以下三个属性：
 
@@ -131,4 +131,6 @@ import { useHistory, useParams, useLocation } from "react-router-dom";
 
 ## Swith 组件实现 404
 
-# .d.ts 文件有什么用
+## .d.ts 文件有什么用
+
+类型定义文件

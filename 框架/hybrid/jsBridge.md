@@ -1,10 +1,10 @@
-# jsbridge 的概念
+## jsbridge 的概念
 
 人们希望有一个中间层，它用来管理原生 native 和 h5 的通信问题，这个中间层就叫做 jsBridge。
 
 严格来说 jsBridge 它并不是一个具体的东西，它只是一种约定的双向通信方式。之所以能建立约定，是因为 native 和 h5 都可以访问同一个 window 对象，这个 window 对象为双方的相互调用提供了可能。
 
-# js 怎么调用 native?
+## js 怎么调用 native?
 
 js 调用 native，无非就是两种：**注入、拦截**
 
@@ -13,12 +13,12 @@ js 调用 native，无非就是两种：**注入、拦截**
 
 简单来说，要么就是 native 直接把方法赤裸裸放心交给 h5 去直接调用；要么就保守点：h5 发送特定消息，native 拦截特定消息，并由 native 自身亲力亲为去调用。
 
-## native 注入
+### native 注入
 
 对于第一种注入来说，webview 确实实现了这种给原生注入的接口，就比如 Andriod 里面的`addJavascriptInterface`方法，就可以将一些原生的东西注入到 webview 中：
 
 ```
-当然，这里还涉及到一个知识点，那就是如果不考虑适配安卓4.2以下的机型，可以用@JavascriptInterface来注入。因为addJavascriptInterface在安卓4.2以下存在安全风险。
+当然，这里还涉及到一个知识点，那就是如果不考虑适配安卓4.2以下的机型，可以用addJavascriptInterface来注入。因为addJavascriptInterface在安卓4.2以下存在安全风险。
 ```
 
 ```java
@@ -38,7 +38,7 @@ webview.addJavascriptInterface(new NativeInjectObject(), 'NativeBridge')
 window.NativeBridge.openCamera();
 ```
 
-## native 拦截
+### native 拦截
 
 首先 native 拦截真的不如注入来的科学，我们姑且看一下拦截的实现思路：
 
@@ -46,7 +46,7 @@ h5 一般通过 iframe.src 方法发送一个 url 请求，当然这个 iframe �
 
 native 端如 Java，会通过`shouldOverrideUrlLoading`拦截掉这个请求，如果发现是之前约定的`muynative`协议开头，那么 native 端就可以非常确定地认为现在 h5 是在试图调用原生的方法，这时候就可以解析这个 url 的路径和参数，并调用相关的原生能力。否则，可以认为这只是个普通的 http 或 https 请求罢了，放行即可。
 
-# native 为什么要调用 js？怎么调用?
+## native 为什么要调用 js？怎么调用?
 
 native 为什么要调用 JS，为了回调。
 
@@ -94,7 +94,7 @@ public class NativeInjectObject {
 webview.addJavascriptInterface(new NativeInjectObject(), 'NativeBridge')
 ```
 
-# js-native-sdk 的封装
+## js-native-sdk 的封装
 
 实际上，我们已经实现了一个 sdk 的简单封装，它做的事情很简单，那就是：_封装一堆原生的方法，并把每个方法的执行结果处理成 promise 对象返回。_
 

@@ -2,7 +2,7 @@
 
 Webpack 就是一个打包工具，webpack 能做什么事情，就取决于我们配置了什么 loader 和 plugin。
 
-所以对于 webpack 来说，我们更多的是关心其使用而非原理。因为它是一个只在开发环境下使用的，线上环境下不会去运行的东西。
+所以对于 webpack 来说，我们更多的是关心其使用而非原理。因为它是一个只在开发环境使用的，线上环境不会去运行的东西。
 
 ## Webpack 起步
 
@@ -84,11 +84,17 @@ module.exports = {
 
   // 配置优化-主要有两方面的内容：最小化包和拆包
   optimization: {
+    // TerserJSPlugin就是用来替代uglifyJSPlugin的，现在已经弄成webpack官方内置了
     minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
   },
 
   // 本地服务-定义一些接口转发规则，用来绕开浏览器的同源策略
   devServer: {},
+
+  // 持久化缓存-默认会将缓存文件输出到node_modules/.cache文件夹內
+  cache: {
+    type: 'filesystem',
+  },
 };
 ```
 
@@ -100,9 +106,7 @@ webpack4+开始支持零配置使用，这里的零配置就是指，其中关�
 
 `splitChunks`是`optimization`的一个子项。
 
-假如我们设置其`chunks: all`，表示无论在入口导入的还是异步导入的，都做代码分割处理。
-
-它则会自动将`node_modules`中的所有内容放入一个名为`vendors〜main.js`的文件中，所以我们常常说：vendor 表示的就是第三方包。
+假如我们设置其`chunks: all`，表示无论是同步导入的还是异步导入的，都会做代码分割处理。
 
 ```js
 module.exports = {
@@ -140,6 +144,20 @@ module.exports = {
 ```
 
 ## 颇为不错的 webpack.DefinePlugin 与旧时代王者 cross-env
+
+`DefinePlugin`现在是 webpack 自带的一个东西，用来设置客户端变量，用法如下：
+
+```js
+plugin: [
+  new webpack.DefinePlugin({
+    "process.env.NODE_ENV": JSON.stringify("test"),
+  }),
+];
+```
+
+其本质还是去设置`process.env.NODE_ENV`，这与旧时代的`cross-env`是一样的。
+
+`cross-env`一直被用于兼容性地进行跨环境设置客户端变量（`linux`/`windows`等通吃），也没有犯过什么错，`DefinePlugin`的出现，估计是 webpack 为了生态整合，将一些通用的插件弄成官方内置。
 
 ## 前端代码为什么要进行打包构建？
 
@@ -196,6 +214,32 @@ module.exports = {
 
 ## Webpack 怎么实现多页配置
 
+`entry`定义多个，`HtmlWebpackPlugin`调用多次。
+
+```js
+module.exports = {
+  entry: {
+    index: path.join(srcPath, "index.js"),
+    other: path.join(srcPath, "other.js"),
+  },
+  plugins: [
+    // 多入口 - 生成 index.html
+    new HtmlWebpackPlugin({
+      template: path.join(srcPath, "index.html"),
+      filename: "index.html",
+      // chunks 表示该页面要引用哪些 chunk （即上面的 index 和 other），默认全部引用
+      chunks: ["index"], // 只引用 index.js
+    }),
+    // 多入口 - 生成 other.html
+    new HtmlWebpackPlugin({
+      template: path.join(srcPath, "other.html"),
+      filename: "other.html",
+      chunks: ["other"], // 只引用 other.js
+    }),
+  ],
+};
+```
+
 ## Webpack 怎么实现懒加载
 
 这个简单，用 import 函数就行了，比如：`import(xxx)`，import 函数会返回一个 Promise。注意其 resolveValue 是一个键名为`default`的对象。
@@ -222,10 +266,16 @@ webpack 的性能优化主要从两方面入手：
 下面可以来看看怎么配置：
 
 ```js
-
+module.exports = {
+  cache: {
+    type: 'filesystem',
+  },
+}
 ```
 
-而对于减小构建产物体积来说，则要把重点放在拆包、压缩这些方面：
+持久化缓存是硬件级别的，它会将生成的缓存文件写进磁盘里，但是不同于`hard-source-webpack-plugin`那种不聪明的清除策略，当内存超过一定体积的时候，webpack5会对长期没用到的缓存文件做清除。
+
+而对于减小构建产物体积来说，则要把重点放在拆包、压缩这些方面：最小化包用`terser-webpack-plugin`、`OptimizeCSSAssetsPlugin`等，而拆包则是配置`splitChunks`，一般都是拆分`vendor`和`common`。
 
 ## 其他实践经验
 

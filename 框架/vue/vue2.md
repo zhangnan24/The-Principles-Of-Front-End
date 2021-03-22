@@ -154,7 +154,7 @@ const arrProprty = Object.create(oldArrProperty);
     // 调原生的api，同时绑定当前调用的上下文
     const res = oldArrProperty[methodName]();
     // 通知视图更新
-    dp.notify();
+    dep.notify();
     // 把原生的执行结果返回出去，不要影响原生的功能
     return res;
   };
@@ -187,7 +187,7 @@ if (typeof Promise !== "undefined") {
 
 为什么要这要设计呢？这是因为在执行微任务时，虽然页面没有重新渲染，但是 DOM 结构已经更新了，这时候是能获取到更新后的 DOM 节点信息的。
 
-（但是感觉vue对微任务做了一些额外的处理，到nextTick的回调执行时，不仅DOM数据更新了，页面确实也重新渲染了）
+（但是感觉 vue 对微任务做了一些额外的处理，到 nextTick 的回调执行时，不仅 DOM 数据更新了，页面确实也重新渲染了）
 
 如果放到宏任务，因为在同步代码和微任务队列都执行完毕后，执行栈清空，这时候 GUI 会检查页面是否需要重新渲染，如果需要的话 GUI 会渲染完再归还主线程给 JS，继续执行宏任务队列里面的任务。
 
@@ -262,70 +262,88 @@ export default {
 
 这样写的话，无论父组件和子孙组件都可以对这个`shareData`做任意修改，相当于父组件提供了一个共享的响应式对象。
 
-## vue中的diff算法
+## vue 中的 diff 算法
 
-首先，diff就是对比的意思。
+首先，diff 就是对比的意思。
 
-vue中的diff算法，其实就是两颗新老`vdom tree`之间的对比。
+vue 中的 diff 算法，其实就是两颗新老`vdom tree`之间的对比。
 
-首先，两颗树直接比较的时间复杂度`O(n^3)`：遍历tree1所有节点 \* 遍历tree2所有节点 \* 排序。这是一个完全不可用的算法。
+首先，两颗树直接比较的时间复杂度`O(n^3)`：遍历 tree1 所有节点 \* 遍历 tree2 所有节点 \* 排序。这是一个完全不可用的算法。
 
-而vue的diff逻辑如下，直接将复杂度蹭蹭降到了`O(n)`：
+而 vue 的 diff 逻辑如下，直接将复杂度蹭蹭降到了`O(n)`：
 
 1. 只做同层级比较，不做跨层级比较；
-2. tag不相同，就直接删掉重建；
-3. key和tag都相同，就直接认为是相同节点，不做深度比较。
+2. tag 不相同，就直接删掉重建；
+3. key 和 tag 都相同，就直接认为是相同节点，不做深度比较。
 
-### patch机制
+### patch 机制
 
-- h函数执行生成vnode函数，vnode函数执行即可得到vnode对象；
-- patch函数用来比较两个新老vnode对象之间的差异，接收的参数包括oldVnode、vnode；
-- patch函数执行且比较两个vnode对象时，针对同级节点，会先进行sameNode比较，key和tag都相同则认为是sameNode，如果是sameNode，则执行patchVNode；
-- sameVnode只能说明key和tag相同，而节点里面的一些自身文本/子节点之类的是否有更新，则要进一步确定，这个“进一步”，就是patchVnode函数，可以说，patchVnode函数就是一个“深度对比函数”；
-- patchVnode会根据新旧节点的变化情况，选择性地调用`updateChildren`/`addVnodes`/`removeVnodes`/`setText`等操作，用来更新新vnode tree上对应的节点。
-- 如果不是sameNode，就删掉重建；
+- h 函数执行生成 vnode 函数，vnode 函数执行即可得到 vnode 对象；
+- patch 函数用来比较两个新老 vnode 对象之间的差异，接收的参数包括 `oldVnode`+`vnode`。当然也可以接收 `domContainer`+`vnode`，用于首次渲染；
+- patch 函数执行且比较两个 vnode 对象时，针对同级节点，会先进行 sameNode 比较，key 和 tag 都相同则认为是 sameNode，如果是 sameNode，则执行 patchVNode；
+- sameVnode 只能说明 key 和 tag 相同，而节点里面的一些自身文本/子节点之类的是否有更新，则要进一步确定，这个“进一步”，就是 patchVnode 函数，可以说，patchVnode 函数就是一个“深度对比函数”；
+- patchVnode 会根据新旧节点的变化情况，选择性地调用`updateChildren`/`addVnodes`/`removeVnodes`/`setText`等操作，用来更新新 vnode tree 上对应的节点。
+- 如果不是 sameNode，就删掉重建。
+
+总结流程如下：
+
+1. h 函数 --> vnode 函数 --> vnode 对象 --> 开始 patch --> 比较是否 sameNode；
+2. 不是 sameNode --> 删掉重建；
+3. 是 sameNode --> patchVnodes --> 对比新老节点 --> 根据情况执行`updateChildren`/`addVnodes`/`removeVnodes`/`setText`（这些都是操作真实 DOM 的方法）。
+
+让我们跳出来想想，对比新老 vnode 差异的目的，不是为了去改新 vnode 或者老 vnode。而是找出这些差异，然后根据这些差异去更新真实 DOM。
 
 ## v-for 中的 key 有啥作用
 
 **在保证正确的前提下，尽可能地复用旧节点，减少渲染次数。**
 
-因为vue的diff算法中的patch函数在判断sameNode的时候，会判断tag和key是否相同，如果循环体里面不写key，那么key都为undefined，加之v-for迭代的是同样类型的节点（tag也相同），那么全部都会认为是相同节点，也就是所谓的“默认就地复用策略”。
+因为 vue 的 diff 算法中的 patch 函数在判断 sameNode 的时候，会判断 tag 和 key 是否相同，如果循环体里面不写 key，那么 key 都为 undefined，加之 v-for 迭代的是同样类型的节点（tag 也相同），那么全部都会认为是相同节点，也就是所谓的“默认就地复用策略”。
 
-这种策略在组件有自己状态的时候是很危险的，因为我们前面说了，只要key和tag一样，就会认为是相同节点，不做深度比较，这其实很容易引起错误，尤其是列表在有中间插入/删除的情况，直接就地复用就会导致错误。这也是不建议使用index作为key的原因。
+这种策略在组件有自己状态的时候是很危险的，因为我们前面说了，只要 key 和 tag 一样，就会认为是相同节点，不做深度比较，这其实很容易引起错误，尤其是列表在有中间插入/删除的情况，直接就地复用就会导致错误。这也是不建议使用 index 作为 key 的原因。
 
-使用random随机数不会引发错误，但是复用率直接为0，渲染次数比较高，也不推荐使用。
+使用 random 随机数不会引发错误，但是复用率直接为 0，渲染次数比较高，也不推荐使用。
 
-## vue的模版解析，渲染和更新的过程
+## vue 的模版解析，渲染和更新的过程
 
 我们先来看看初次渲染：
 
-1. 对tempalte模版进行编译，使用大量的正则表达式对tempalte里面的指令、语法、属性进行匹配，最终生成一个render函数；
-2. 触发响应式，对script里面的data的getter/setter进行劫持，递归处理成响应式对象，用Watcher观察起来。
-3. 执行render函数以生成vnode对象，执行patch，页面就渲染上了，注意这里其实会触发第二步定义的各种getter（只要模版用到了data里面的东西），这其实就是个收集依赖的过程啊。
+1. 触发响应式，对 script 里面的 data 的 getter/setter 进行劫持，递归处理成响应式对象，用 Watcher 观察起来。
+2. 对 tempalte 模版进行编译，使用大量的正则表达式对 tempalte 里面的指令、语法、属性进行匹配，最终生成一个 render 函数；
+3. 执行 render 函数以生成 vnode 对象，执行 patch，页面就渲染上了，注意这里其实会触发之前定义的各种 getter（只要模版用到了 data 里面的东西），这其实就是个收集依赖的过程啊。
 
 至此，初次渲染已经结束，那么更新又如何呢？我们接着看：
 
-1. 修改data，触发setter，然后会notify通知Watcher；
-2. 重新执行render函数（re-render），生成newVnode，然后patch，然后调update更新视图
+1. 修改 data，触发 setter，然后会 notify 通知 Watcher；
+2. 重新执行 render 函数（re-render），生成 newVnode，然后 patch，然后调 update 更新视图
 
-## vue的异步渲染
+以上这些，就是“**vue 的响应式原理**”，这里要做个区分：
 
-vue在页面渲染时会将我们对data的修改做整合，多次data修改只会渲染一次。
+- 响应式原理：`Object.defineProperty`、`getter/setter`、`Watcher`这些
+- 双向绑定原理（v-model 原理）: 语法糖，`:value` + `@input` 的结合
+
+## vue 的异步渲染
+
+vue 在页面渲染时会将我们对 data 的修改做整合，多次 data 修改只会渲染一次。
 
 ## 前端路由原理
 
-前端的路由模式，现在一般就分为哈希模式和history模式（需要后端支持）。
+前端的路由模式，现在一般就分为哈希模式和 history 模式（需要后端支持）。
 
-对于哈希模式来说，一般用于单页面应用，也就是spa，会有如下特点：
+对于哈希模式来说，一般用于单页面应用，也就是 spa，会有如下特点：
 
-1. hash变化会触发网页跳转，即浏览器的前进、后退；
+1. hash 变化会触发网页跳转，即浏览器的前进、后退；
 2. 不会刷新页面
-3. hash不会提交到服务端，完全由前端控制。
+3. hash 不会提交到服务端，完全由前端控制。
 
-url里面如果带了哈希，url的变化（浏览器前进后退/直接通过js赋值url）会触发`hashchange`事件，在事件处理函数里面可以获取到新的hash值。通过vue-router相关的配置，可以匹配出来某个`path`对应的`component`是哪个，然后通常会将这个组件异步加载进来并解析渲染到`<router-view>`出口。
+url 里面如果带了哈希，url 的变化（浏览器前进后退/直接通过 js 赋值 url）会触发`hashchange`事件，在事件处理函数里面可以获取到新的 hash 值。通过 vue-router 相关的配置，可以匹配出来某个`path`对应的`component`是哪个，然后通常会将这个组件异步加载进来并解析渲染到`<router-view>`出口。
 
 ## 常用的软件架构-MVVM、MVC、MVP
 
-- MVC，主要特点是单向更新，只能由视图层view通过controler更新model层，不能反着来；
-- MVP，双向通信，但是中间层Presenter逻辑太臃肿了，需要手动绑定Model和View完成通信，设计不科学；
-- MVVM，中间层ViewModel设计科学，自动对视图层和逻辑层做双向绑定，数据驱动视图，重用度很高。
+- MVC，主要特点是单向更新，只能由视图层 view 通过 controler 更新 model 层，不能反着来；
+- MVP，双向通信，但是中间层 Presenter 逻辑太臃肿了，需要手动绑定 Model 和 View 完成通信，设计不科学；
+- MVVM，中间层 ViewModel 设计科学，自动对视图层和逻辑层做双向绑定（其实就是用 Object.defineProperty/Proxy 等做了 getter/setter 劫持），数据驱动视图，重用度很高。
+
+## Object.defineProperty 有什么缺点？
+
+1. 不能监听数组变化（Proxy 天然能支持监听数组变化）；
+2. 不能监听属性的新增/删除。
