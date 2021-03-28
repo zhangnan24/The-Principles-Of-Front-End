@@ -275,7 +275,12 @@ module.exports = {
 
 持久化缓存是硬件级别的，它会将生成的缓存文件写进磁盘里，但是不同于`hard-source-webpack-plugin`那种不聪明的清除策略，当内存超过一定体积的时候，webpack5会对长期没用到的缓存文件做清除。
 
-而对于减小构建产物体积来说，则要把重点放在拆包、压缩这些方面：最小化包用`terser-webpack-plugin`、`OptimizeCSSAssetsPlugin`等，而拆包则是配置`splitChunks`，一般都是拆分`vendor`和`common`。
+而对于减小构建产物体积来说，则要把重点放在拆包、压缩这些方面：
+
+- 压缩代码。比如使用用`terser-webpack-plugin`、`OptimizeCSSAssetsPlugin`等；
+- 提取公共代码。也就是我们常说的拆包。通过配置`splitChunks`，一般都是拆分`vendor`和`common`，将公有文件抽成单独的包，减少重复代码；
+- 小图片使用base64直接写到文件里，减少请求次数；
+- 懒加载。使用`import`函数实现。
 
 ## 其他实践经验
 
