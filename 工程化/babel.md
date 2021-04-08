@@ -82,3 +82,31 @@ var promise = _Promise.resolve();
 ```
 
 其实就是给你的代码里面的新潮API换了个名字，比如`Promise`换成`_Promise`。而像`_includesInstanceProperty`，`_Promise`这些方法放在统一打包的模块里面，避免直接往window对象里面追加属性或是暴力魔改原型对象。
+
+## babel的工作原理
+
+babel从本质上来说，就是一个编译器。它的工作原理如下：
+
+1. 解析。通过词法分析（分割代码，处理成数组）和语法分析（判断语法是否正确），将源代码转换成抽象语法树AST（用JS对象表示），用到了`babylon`这个插件；
+2. 分析依赖。通过`traverse`这个插件分析文件用到的依赖，并输出；
+3. 重新生成。通过`transformFromAst`这个插件，将转换后AST生成新的代码（ES5及以下）。
+
+```js
+// 词法分析结果示例
+[
+    { "type": "Keyword", "value": "const" },
+    { "type": "Identifier", "value": "add" },
+    { "type": "Punctuator", "value": "=" },
+    { "type": "Punctuator", "value": "(" },
+    { "type": "Identifier", "value": "a" },
+    { "type": "Punctuator", "value": "," },
+    { "type": "Identifier", "value": "b" },
+    { "type": "Punctuator", "value": ")" },
+    { "type": "Punctuator", "value": "=>" },
+    { "type": "Identifier", "value": "a" },
+    { "type": "Punctuator", "value": "+" },
+    { "type": "Identifier", "value": "b" }
+]
+```
+
+
