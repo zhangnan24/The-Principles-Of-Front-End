@@ -55,7 +55,9 @@ module.exports = {
 
   // 自定义配置解析，多用于配置alias
   resolve: {
-    "@": path.resolve(__dirname, "./src"),
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    }
   },
 
   // 模块处理，基本上就是各种loader
