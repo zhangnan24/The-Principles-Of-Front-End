@@ -35,6 +35,36 @@ console.log(year); // 1958
 
 同时我们也可以看到，其实上述代码是把整个 A 模块都加载了，然后包装在一个对象里面导入进来。这种加载，我们称之为“运行时加载”。（代码跑起来的时候再去加载模块）
 
+## commonjs原理
+
+在commonjs中的文件，实际上最后会变成一个执行上下文，传到一个包装器函数里面，这个函数将传入`exports`，`module`，`require`，`__filename`等形参，大致如下：
+
+```js
+(function(exports, require, module, __filename, __dirname){
+   const sayName = require('./hello.js');
+   
+   module.exports = {
+    sayName
+   }；
+})
+```
+这里要特别注意一点：exports和module.exports一开始都是一个空对象{}，并且是指向同一块内存地址的，但是require的结果却只认module.exports。
+
+所以，如果直接对exports进行赋值，这次导出就无意义了，其实我们并不需要用exports，用module.exports就好。
+
+如果非要直接用exports，那前提就是**不改变其内存地址**，如下：
+
+```js
+const name = "zhang";
+const age = 27;
+
+Object.assign(exports, { name, age });
+
+// 或者
+exports.name = name;
+exports.age = age;
+```
+
 ## ES6 模块用法探究
 
 像 ES6 模块的话，它的花样就更多一些，比如单单导出这方面，就分什么单独导出、默认导出、转发导出。我们这里可以看看现在比较常见的几种玩法。
