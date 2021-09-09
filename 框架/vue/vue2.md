@@ -236,7 +236,7 @@ setTimeout(() => {
       }
     };
   },
-  // 这里main用provide函数是为了让this指向变得正确
+  // 这里用provide函数是为了让this指向变得正确
   provide() {
     return {
       share: this.shareData
