@@ -24,10 +24,10 @@
 
 ```html
 <div class="bfc">
-    <div class="test1">test1</div>
+    <div class="test test1">test1</div>
 </div>
 
-<div class="test2">test2</div>
+<div class="test test2">test2</div>
 ```
 
 ```css
@@ -35,12 +35,19 @@
     overflow: auto;
 }
 
+.test {
+  width: 300px;
+  height: 300px;
+}
+
 .test1 {
     margin: 40px;
+    background-color: red;
 }
 
 .test2 {
     margin: 50px;
+    background-color: blue;
 }
 ```
 
@@ -60,7 +67,7 @@
 }
 
 .sub {
-    margin: 50px;
+    margin-top: 50px;
 }
 ```
 
@@ -80,6 +87,16 @@ float其实是一个元老级的属性，旧到IE6也支持这个属性。
 - 给浮动元素加个容器，给容器的after伪元素设置`clear: both;`。（增加父级html容器）
 - 给浮动元素加个容器，并为容器开启BFC特性。（增加父级html容器）
 
+对于第二种方法，完整代码为：
+
+```css
+.container::after {
+  display: block;
+  content: "";
+  clear: both;
+}
+```
+
 其实这三种方式都会增加html元素。只不过第一种是一定会专门为float增加一个元素，第二三种可能凑巧本身就需要一个元素去包裹，然后在这个包裹的元素上增加特定伪元素/设置BFC。
 
 优雅？三种方案都不怎么优雅。
@@ -97,7 +114,6 @@ BFC又称“块级格式化上下文”，它会包含创建者内部的所有�
 - 行内块级元素（inline-block）
 - 绝对定位/固定定位元素（absolute/fixed）
 - 浮动元素（float）
-- display: flow-root。（专用于生成BFC的操作，大部分浏览器都支持，IE不支持）
 
 其中最常用的就是第一个，设置`overflow: auto`或者`overflow: hidden`，因为这种方法不需要改变元素的定位方式，可以无伤创建BFC。
 
